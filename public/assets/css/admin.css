@@ -1,0 +1,16 @@
+/* public/assets/css/admin.css */
+.kpi-card {
+    border-left: 4px solid var(--sicta-orange);
+    border-radius: 0.65rem;
+}
+
+.kpi-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--sicta-dark);
+}
+
+.code-print-grid {
+    font-family: Consolas, "Courier New", monospace;
+    letter-spacing: 0.08em;
+}

@@ -1,0 +1,15 @@
+/* public/assets/css/public.css */
+.candidate-select-card {
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.candidate-select-card:hover {
+    border-color: var(--sicta-orange) !important;
+    background-color: rgba(243, 130, 24, 0.05);
+}
+
+.candidate-select-card:has(input:checked) {
+    border-color: var(--sicta-orange) !important;
+    box-shadow: 0 0 0 0.2rem rgba(243, 130, 24, 0.25);
+    background-color: rgba(243, 130, 24, 0.08);
+}

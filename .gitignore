@@ -1,0 +1,25 @@
+# Fichiers système et éditeurs
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# Dépendances et build
+vendor/
+node_modules/
+
+# Logs, cache et fichiers temporaires PHP / WampServer
+*.log
+error_log
+*.tmp
+*.bak
+*.old
+
+# Fichiers d'upload locaux et identifiants locaux
+uploads/*
+!uploads/.gitkeep
+config/local.php
+.env

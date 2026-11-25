@@ -1,0 +1,12 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Ne pas réécrire si le fichier ou dossier existe réellement dans public/ (CSS, JS, vendor, img)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Tout le reste est envoyé au contrôleur frontal index.php
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>
+
+Options -Indexes
