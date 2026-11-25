@@ -30,6 +30,14 @@ $pageTitle = 'SICTA — Tableau de bord Admin';
     <?php endif; ?>
 </div>
 
+    <?php if (!$scrutinCourant): ?>
+        <div class="card sicta-card p-4 text-center">
+            <p class="text-muted mb-3">Aucun scrutin n’est enregistré pour le moment.</p>
+            <a href="<?= htmlspecialchars($baseUrl) ?>/index.php?action=admin.scrutins.index" class="btn btn-sicta-primary align-self-center">
+                Gérer les scrutins
+            </a>
+        </div>
+    <?php else: ?>
 <div class="row g-3 mb-4">
     <div class="col-6 col-lg-3">
         <div class="card sicta-card kpi-card p-3 h-100">
@@ -54,9 +62,10 @@ $pageTitle = 'SICTA — Tableau de bord Admin';
     </div>
     <div class="col-6 col-lg-3">
         <div class="card sicta-card kpi-card p-3 h-100">
-            <div class="text-muted small">Codes utilisés (votes)</div>
+            <div class="text-muted small">Codes utilisés</div>
             <div class="kpi-value" style="color: var(--sicta-orange);"><?= (int) ($kpis['codes_utilises'] ?? 0) ?></div>
-            <div class="small text-muted">Statut : <?= htmlspecialchars($scrutinCourant['STATUT'] ?? 'aucun') ?></div>
+            <div class="small text-muted">Bulletins : <?= (int) ($kpis['bulletins'] ?? 0) ?></div>
+            <div class="small text-muted">Statut : <?= htmlspecialchars((string) ($scrutinCourant['STATUT'] ?? '')) ?></div>
         </div>
     </div>
 </div>
@@ -68,10 +77,19 @@ $pageTitle = 'SICTA — Tableau de bord Admin';
                 <div class="card sicta-card p-4 h-100">
                     <h2 class="h5 fw-bold mb-3" style="color: var(--sicta-dark);"><?= htmlspecialchars($groupe['categorie']) ?></h2>
                     <div style="height: 240px;">
-                        <canvas id="adminChart<?= $idx ?>"></canvas>
+                        <?php if (!empty($groupe['labels'])): ?>
+                            <canvas id="adminChart<?= $idx ?>"></canvas>
+                        <?php else: ?>
+                            <p class="text-muted small mb-0">Aucun candidat inscrit dans cette catégorie.</p>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
         <?php endforeach; ?>
     </div>
+<?php else: ?>
+    <div class="card sicta-card p-4 text-center">
+        <p class="text-muted mb-0">Aucune catégorie n’est enregistrée pour ce scrutin.</p>
+    </div>
+<?php endif; ?>
 <?php endif; ?>

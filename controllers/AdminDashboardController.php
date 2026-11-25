@@ -24,6 +24,7 @@ class AdminDashboardController extends Controller
         $kpis = [
             'total_electeurs'  => 0,
             'emargements'      => 0,
+            'bulletins'        => 0,
             'taux_participation' => 0.0,
             'total_codes'      => 0,
             'codes_generes'    => 0,

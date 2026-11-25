@@ -44,6 +44,7 @@ $pageTitle = 'SICTA — Résultats du Scrutin';
             <div class="card sicta-card p-3 h-100">
                 <div class="text-muted small">Taux de participation</div>
                 <div class="fs-4 fw-bold" style="color: var(--sicta-orange);"><?= htmlspecialchars((string) ($kpis['taux_participation'] ?? 0)) ?> %</div>
+                <div class="small text-muted">sur <?= (int) ($kpis['total_electeurs'] ?? 0) ?> électeurs inscrits</div>
             </div>
         </div>
         <div class="col-6 col-md-3">
@@ -56,6 +57,7 @@ $pageTitle = 'SICTA — Résultats du Scrutin';
             <div class="card sicta-card p-3 h-100">
                 <div class="text-muted small">Codes utilisés</div>
                 <div class="fs-4 fw-bold"><?= (int) ($kpis['codes_utilises'] ?? 0) ?></div>
+                <div class="small text-muted">Bulletins enregistrés : <?= (int) ($kpis['bulletins'] ?? 0) ?></div>
             </div>
         </div>
     </div>
@@ -99,18 +101,24 @@ $pageTitle = 'SICTA — Résultats du Scrutin';
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach (($groupe['candidats'] ?? []) as $c): ?>
+                                <?php if (empty($groupe['candidats'])): ?>
                                     <tr>
-                                        <td><?= htmlspecialchars((string) ($c['CANDIDAT'] ?? '')) ?></td>
-                                        <td class="text-end fw-bold"><?= (int) ($c['NB_VOIX'] ?? 0) ?></td>
-                                        <td class="text-end"><?= htmlspecialchars((string) ($c['POURCENTAGE'] ?? 0)) ?> %</td>
-                                        <td class="text-end">
-                                            <span class="badge bg-dark">
-                                                <?= (int) (!empty($c['RANG_FIGE']) ? $c['RANG_FIGE'] : ($c['RANG_CALCULE'] ?? 0)) ?>
-                                            </span>
-                                        </td>
+                                        <td colspan="4" class="text-center text-muted">Aucun candidat inscrit dans cette catégorie.</td>
                                     </tr>
-                                <?php endforeach; ?>
+                                <?php else: ?>
+                                    <?php foreach ($groupe['candidats'] as $c): ?>
+                                        <tr>
+                                            <td><?= htmlspecialchars((string) ($c['CANDIDAT'] ?? '')) ?></td>
+                                            <td class="text-end fw-bold"><?= (int) ($c['NB_VOIX'] ?? 0) ?></td>
+                                            <td class="text-end"><?= htmlspecialchars((string) ($c['POURCENTAGE'] ?? 0)) ?> %</td>
+                                            <td class="text-end">
+                                                <span class="badge bg-dark">
+                                                    <?= (int) (!empty($c['RANG_FIGE']) ? $c['RANG_FIGE'] : ($c['RANG_CALCULE'] ?? 0)) ?>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </tbody>
                         </table>
                     </div>

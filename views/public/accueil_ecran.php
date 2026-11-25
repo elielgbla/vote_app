@@ -96,6 +96,7 @@ $estActif = (($scrutin['STATUT'] ?? '') === 'actif');
 </section>
 
 <!-- 2. INDICATEURS CLÉS (KPIs) -->
+<?php if ($scrutin): ?>
 <section aria-label="Indicateurs de participation" class="mb-4">
     <div class="row g-3">
         <div class="col-6 col-lg-3">
@@ -108,6 +109,7 @@ $estActif = (($scrutin['STATUT'] ?? '') === 'actif');
             <div class="card sicta-card p-3 h-100">
                 <div class="text-muted small">Taux de participation</div>
                 <div class="fs-3 fw-bold" style="color: var(--sicta-orange);"><?= htmlspecialchars((string) ($kpis['taux_participation'] ?? 0)) ?> %</div>
+                <div class="small text-muted">sur <?= (int) ($kpis['total_electeurs'] ?? 0) ?> électeurs inscrits</div>
             </div>
         </div>
         <div class="col-6 col-lg-3">
@@ -120,21 +122,56 @@ $estActif = (($scrutin['STATUT'] ?? '') === 'actif');
             <div class="card sicta-card p-3 h-100">
                 <div class="text-muted small">Codes utilisés</div>
                 <div class="fs-3 fw-bold" style="color: var(--sicta-dark);"><?= (int) ($kpis['codes_utilises'] ?? 0) ?></div>
+                <div class="small text-muted">Bulletins enregistrés : <?= (int) ($kpis['bulletins'] ?? 0) ?></div>
             </div>
         </div>
     </div>
 </section>
+<?php else: ?>
+    <div class="card sicta-card p-4 text-center mb-4">
+        <p class="text-muted mb-0">Aucun indicateur disponible : aucun scrutin n’est configuré.</p>
+    </div>
+<?php endif; ?>
 
-<!-- 3. CATÉGORIES & CANDIDATS EN LICE -->
-<?php if (!empty($categories)): ?>
-    <section aria-label="Catégories et candidats" class="mb-5">
-        <h2 class="h4 fw-bold mb-3" style="color: var(--sicta-dark);">Catégories &amp; Candidats</h2>
-        <?php foreach ($categories as $cat): ?>
+<!-- 3. CATÉGORIES & CANDIDATS EN LICE (SCRUTIN ACTIF UNIQUEMENT) -->
+<?php
+$scrutinCourant = $scrutin ?? $scrutinActif ?? $scrutinPublic ?? null;
+$idScrutinActif = is_array($scrutinCourant) ? (int) ($scrutinCourant['ID_SCRUTIN'] ?? 0) : 0;
+$estScrutinActif = is_array($scrutinCourant)
+    && (
+        strtolower(trim((string) ($scrutinCourant['STATUT'] ?? ''))) === 'actif'
+        || (int) ($scrutinCourant['EST_ACTIF'] ?? 0) === 1
+    );
+
+$categoriesActives = [];
+if ($estScrutinActif && $idScrutinActif > 0 && !empty($categories)) {
+    foreach ($categories as $catItem) {
+        if (!isset($catItem['ID_SCRUTIN']) || (int) $catItem['ID_SCRUTIN'] === $idScrutinActif) {
+            $categoriesActives[] = $catItem;
+        }
+    }
+}
+?>
+
+<?php if ($estScrutinActif && !empty($categoriesActives)): ?>
+    <section aria-label="Catégories et candidats en lice" class="mb-5">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <h2 class="h4 fw-bold mb-0" style="color: var(--sicta-dark);">
+                Catégories &amp; Candidats en lice
+            </h2>
+            <span class="badge text-bg-success">Scrutin en cours</span>
+        </div>
+
+        <?php foreach ($categoriesActives as $cat): ?>
             <div class="card sicta-card mb-3">
                 <div class="card-header bg-white border-bottom py-3">
-                    <h3 class="h5 mb-0 fw-bold" style="color: var(--sicta-dark);"><?= htmlspecialchars((string) $cat['LIB']) ?></h3>
+                    <h3 class="h5 mb-0 fw-bold" style="color: var(--sicta-dark);">
+                        <?= htmlspecialchars((string) ($cat['LIB'] ?? '')) ?>
+                    </h3>
                     <?php if (!empty($cat['DESCRIPTION'])): ?>
-                        <div class="text-muted small mt-1"><?= htmlspecialchars((string) $cat['DESCRIPTION']) ?></div>
+                        <div class="text-muted small mt-1">
+                            <?= htmlspecialchars((string) $cat['DESCRIPTION']) ?>
+                        </div>
                     <?php endif; ?>
                 </div>
                 <div class="card-body">
@@ -151,13 +188,17 @@ $estActif = (($scrutin['STATUT'] ?? '') === 'actif');
                                 <div class="col-12 col-sm-6 col-xl-4">
                                     <div class="border rounded-3 p-3 d-flex align-items-center gap-3 h-100 bg-light bg-opacity-50">
                                         <img src="<?= htmlspecialchars($photoUrl) ?>"
-                                             alt="<?= htmlspecialchars((string) $cand['NOM_PRENOMS']) ?>"
+                                             alt="<?= htmlspecialchars((string) ($cand['NOM_PRENOMS'] ?? '')) ?>"
                                              class="candidate-avatar flex-shrink-0">
                                         <div>
-                                            <div class="fw-bold"><?= htmlspecialchars((string) $cand['NOM_PRENOMS']) ?></div>
-                                            <div class="small text-muted"><?= htmlspecialchars((string) ($cand['SERVICE'] ?? 'Service non précisé')) ?></div>
+                                            <div class="fw-bold"><?= htmlspecialchars((string) ($cand['NOM_PRENOMS'] ?? '')) ?></div>
+                                            <div class="small text-muted">
+                                                <?= htmlspecialchars((string) ($cand['SERVICE'] ?? 'Service non précisé')) ?>
+                                            </div>
                                             <?php if (!empty($cand['SITE_LIB'])): ?>
-                                                <span class="badge bg-secondary mt-1"><?= htmlspecialchars((string) $cand['SITE_LIB']) ?></span>
+                                                <span class="badge bg-secondary mt-1">
+                                                    <?= htmlspecialchars((string) $cand['SITE_LIB']) ?>
+                                                </span>
                                             <?php endif; ?>
                                         </div>
                                     </div>

@@ -22,6 +22,17 @@ class ResultatModel
         $stmtEmarg->execute([':id' => $idScrutin]);
         $emargements = (int) $stmtEmarg->fetchColumn();
 
+        $totalElecteurs = (int) $this->pdo->query("SELECT COUNT(*) FROM INDIVIDU")->fetchColumn();
+
+        $stmtBulletins = $this->pdo->prepare(
+            "SELECT COUNT(*)
+             FROM VOTE v
+             INNER JOIN CATEGORIE c ON c.ID_CATEGORIE = v.ID_CATEGORIE
+             WHERE c.ID_SCRUTIN = :id"
+        );
+        $stmtBulletins->execute([':id' => $idScrutin]);
+        $bulletins = (int) $stmtBulletins->fetchColumn();
+
         $stmtCodes = $this->pdo->prepare(
             "SELECT
                 COUNT(*) AS total_codes,
@@ -39,18 +50,15 @@ class ResultatModel
         $codesDistribues = (int) ($codesRow['codes_distribues'] ?? 0);
         $codesUtilises = (int) ($codesRow['codes_utilises'] ?? 0);
 
-        $baseElecteurs = ($codesDistribues + $codesUtilises) > 0
-            ? ($codesDistribues + $codesUtilises)
-            : ($totalCodes > 0 ? $totalCodes : (int) $this->pdo->query("SELECT COUNT(*) FROM INDIVIDU")->fetchColumn());
-
-        $tauxParticipation = $baseElecteurs > 0
-            ? round(($emargements / $baseElecteurs) * 100, 1)
+        $tauxParticipation = $totalElecteurs > 0
+            ? round(($emargements / $totalElecteurs) * 100, 1)
             : 0.0;
 
         return [
             'statut'             => $statut,
-            'total_electeurs'    => $baseElecteurs,
+            'total_electeurs'    => $totalElecteurs,
             'emargements'        => $emargements,
+            'bulletins'          => $bulletins,
             'taux_participation' => $tauxParticipation,
             'total_codes'        => $totalCodes,
             'codes_generes'      => (int) ($codesRow['codes_generes'] ?? 0),
