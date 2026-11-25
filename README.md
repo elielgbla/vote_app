@@ -249,4 +249,4 @@ php spark scrutin:verifier      Ouvrir ou clôturer les scrutins selon les dates
 
 ## Auteur
 
-[Ton nom] : projet de vote en ligne, CodeIgniter 4.
+GBLA TONGA ELIEL : projet de vote en ligne, CodeIgniter 4.
